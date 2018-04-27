@@ -1,0 +1,201 @@
+<!doctype <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Joguinho</title>
+    <script src="sprite.js"></script>
+    <style>
+        canvas{
+            position: absolute;
+            top: 0px;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            margin: auto;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen"  />
+    
+</head>
+<body>
+    <script>
+    var canvas, ctx, ALTURA, LARGURA, frames = 0, velocidade = 6, 
+    estadoAtual, img,
+    estados= {
+        jogar:0,
+        jogando:1,
+        perdeu:2
+    },
+    
+    bloco = {
+        x:50,
+        y:300,
+        altura:50,
+        largura:50,
+        cor:"#ffdf70",
+        gravidade:0.3,
+        velocidade:0,
+        pulo:9,
+
+        atualiza: function(){
+            this.velocidade += this.gravidade;
+            this.y += this.velocidade;
+        },
+
+        desenha: function () {
+            ctx.fillStyle = this.cor;
+            ctx.fillRect( this.x, this.y,  this.largura, this.altura); 
+            
+        },
+
+        pula:function(){
+            this.velocidade = -this.pulo
+        }
+
+        
+    }
+    obstaculo = {
+        _obs: [],
+        tempo:0,
+        insere2: function(){
+            this._obs.push({
+                x:LARGURA,
+                y:0,
+                largura:60,
+                altura :100 + Math.floor(200* Math.random()),
+                cor:"#000000",             
+            });
+        },
+        insere: function(){
+            this._obs.push({
+                x:LARGURA,
+                y:600,
+                largura:60,
+                altura :0 - Math.floor(200* Math.random()),
+                cor:"#000000",             
+            });
+            this.tempo = 30 + Math.floor(50* Math.random())
+            
+        },
+        
+        atualiza: function() {
+            if(this.tempo == 0){
+                this.insere();
+               // this.insere2();
+            }
+            else{
+                this.tempo -= 1;
+            } 
+
+            for (var i = 0; i < this._obs.length; i++) {
+                var obs = this._obs[i];
+
+                obs.x -= velocidade;
+                if ((bloco.y >= 600 || bloco.y<=0) ||(bloco.y<=obs.altura && bloco.x <= obs.x) ) {
+                    estadoAtual = estados.perdeu;
+                }
+                else if(obs.x <= -obs.largura){
+                    this._obs.splice(i, 1);
+                }
+                
+            }
+        
+            
+        },
+        desenha:function(){
+            for (var i = 0; i < this._obs.length; i++) {
+                var obs = this._obs[i];
+                ctx.fillStyle = obs.cor;
+                ctx.fillRect(obs.x,obs.y,obs.largura,obs.altura);
+                
+            }
+        }
+
+       
+    }
+    ;
+
+    
+    function clique(event){
+        if (estadoAtual==estados.jogando) {
+            bloco.pula();
+        }
+        else if (estadoAtual==estados.jogar) {
+            estadoAtual = estados.jogando;
+        }
+        else if (estadoAtual==estados.perdeu) {
+            estadoAtual = location.reload("file:///C:/Users/titir/OneDrive/%C3%81rea%20de%20Trabalho/game/game.html");
+        }
+       
+    }
+
+    function main(){
+        ALTURA = window.innerHeight;
+        LARGURA = window.innerWidth;
+        if(LARGURA>=500){
+            LARGURA =  600;
+            ALTURA = 600;
+
+        }
+        canvas = document.createElement("canvas");
+        canvas.width = LARGURA;
+        canvas.height = ALTURA;
+        canvas.style.border = "1px solid #000";
+        
+        ctx = canvas.getContext("2d");
+        document.body.appendChild(canvas);
+        document.addEventListener("mousedown", clique);
+        
+        estadoAtual = estados.jogar;
+        img = new Image();
+        img.src = "images/cenario.jpg"
+        roda();
+    
+    
+    }
+    function roda(){
+        atualiza();
+        desenha();
+        window.requestAnimationFrame(roda);
+    }
+
+    function atualiza(){
+        frames++;
+        if (estadoAtual==estados.jogando) {
+            
+        
+        bloco.atualiza();
+        obstaculo.atualiza();
+    }
+    }
+
+    function desenha() {
+        //ctx.fillStyle = "#50beff";
+        //ctx.fillRect(0,0,LARGURA, ALTURA);
+
+        bg.desenha(0, 0);
+
+        if (estadoAtual==estados.jogar) {
+            ctx.fillStyle = "green";
+            ctx.fillRect(LARGURA/2 - 50, ALTURA/2 - 50, 100, 100);
+        }
+        else if (estadoAtual==estados.perdeu) {
+            ctx.fillStyle = "red";
+            ctx.fillRect(LARGURA/2 - 50, ALTURA/2 - 50, 100, 100);
+        }
+        else if (estadoAtual==estados.jogando) {
+            
+            obstaculo.desenha();
+        }
+        bloco.desenha();
+        
+    }
+
+
+    main();
+    
+    </script>
+</body>
+</html>
