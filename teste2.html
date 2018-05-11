@@ -66,6 +66,12 @@
         darthVaderImg.on('mouseout', function() {
             document.body.style.cursor = 'default';
         });
+        darthVaderImg3.on('mouseover', function() {
+            document.body.style.cursor = 'pointer';
+        });
+        darthVaderImg3.on('mouseout', function() {
+            document.body.style.cursor = 'default';
+        });
 
         
         layer.add(darthVaderImg2);
@@ -75,9 +81,7 @@
         stage.add(layer);
     }
     var imageObj = new Image();
-
     imageObj.onload = onLoadImage;
-
     imageObj.src = './vidraria/BalaoVolumetrico.png';
 
     var imageCenario = new Image();
